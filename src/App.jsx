@@ -1,26 +1,20 @@
-import * as React from 'react';
-import './App.css';
-import { Admin, ListGuesser, Resource } from 'react-admin';
-import fakeDataProvider from 'ra-data-fakerest';
-import authProvider from './authProvider';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HydraAdmin } from '@api-platform/admin';
 import LoginPage from './LoginPage';
-
-const dataProvider = fakeDataProvider({
-  users: [
-    { id: 1, name: 'John Doe', email: 'john.doe@example.com' },
-    { id: 2, name: 'Jane Smith', email: 'jane.smith@example.com' }
-  ]
-});
+import RegisterPage from './RegisterPage';
+import VerifyEmail from './VerifyEmail';
+import authProvider from './authProvider';
 
 function App() {
   return (
-    <Admin
-      loginPage={() => <LoginPage authProvider={authProvider} />}
-      authProvider={authProvider}
-      dataProvider={dataProvider}
-    >
-      <Resource name="users" list={ListGuesser} />
-    </Admin>
+    <Router>
+      <Routes>
+        <Route path="/login" element={<LoginPage authProvider={authProvider} />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/verify/:token" element={<VerifyEmail />} />
+        <Route path="/*" element={<HydraAdmin entrypoint="https://localhost:8000/api" authProvider={authProvider} />} />
+      </Routes>
+    </Router>
   );
 }
 
