@@ -11,7 +11,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<LoginPage authProvider={authProvider} />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/verify/:token" element={<VerifyEmail />} />
+        <Route path="/email-verify/:token" element={<VerifyEmail />} />
         <Route path="/*" element={<HydraAdmin entrypoint="https://localhost:8000/api" authProvider={authProvider} />} />
       </Routes>
     </Router>

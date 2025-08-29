@@ -25,15 +25,21 @@ const authProvider = {
             body: JSON.stringify({ email, password }),
         });
 
-        if (!response.ok) {
-            const error = await response.json();
-            return Promise.reject(new Error(error.message || 'Registration failed'));
+        const text = await response.text(); // récupérer d'abord le texte brut
+        let data;
+        try {
+            data = JSON.parse(text); // essayer de parser JSON
+        } catch {
+            throw new Error('Réponse serveur non valide : ' + text);
         }
 
-        const data = await response.json();
-        // data peut contenir un message ou un token temporaire pour verification
+        if (!response.ok) {
+            throw new Error(data.message || 'Registration failed');
+        }
+
         return Promise.resolve(data);
     },
+
 
     verifyEmail: async (token) => {
         const response = await fetch(`${API_URL}/verify?token=${token}`, {
