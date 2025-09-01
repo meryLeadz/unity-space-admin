@@ -76,9 +76,9 @@ export default function RegisterPage() {
                 password: password,
             });
             console.log('User registered:', response.data);
-            setSuccessMessage("Inscription réussie ! Vérifiez votre email.");
-            setOpenSnackbar(true);
-            setTimeout(() => navigate("/login"), 3000);
+            navigate('/confirmation-inscription', {
+                state: { email: email }
+            })
         } catch (err) {
             setError(err.message);
         }

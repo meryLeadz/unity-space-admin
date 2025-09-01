@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography, Button } from '@mui/material';
-import authProvider from './authProvider';
+import axios from 'axios'; // Assurez-vous d'importer axios
 
 export default function VerifyEmail() {
     const { token } = useParams();
@@ -12,18 +12,34 @@ export default function VerifyEmail() {
     useEffect(() => {
         const verify = async () => {
             try {
-                await authProvider.verifyEmail(token);
-                setStatus('success');
-                setMessage('Your email has been verified successfully!');
+                // REMPLACER cette ligne :
+                // await authProvider.verifyEmail(token);
+                // PAR cette ligne :
+                const response = await axios.post(`http://localhost:8008/verify-email/${token}`);
+
+                if (response.status === 200 && response.data.message === 'confirmed') {
+                    setStatus('success');
+                    setMessage('Your email has been verified successfully!');
+                } else {
+                    // Gérer les cas où le statut HTTP est OK, mais la réponse n'est pas celle attendue
+                    setStatus('error');
+                    setMessage('Verification failed. Invalid response from server.');
+                }
             } catch (err) {
+                // Gérer les erreurs de requête HTTP (ex: 400 Bad Request)
                 setStatus('error');
-                setMessage(err.message || 'Verification failed');
+                if (err.response && err.response.data && err.response.data.message) {
+                    setMessage(err.response.data.message); // Récupère le message d'erreur du serveur
+                } else {
+                    setMessage('Verification failed. Server is unreachable.');
+                }
             }
         };
 
         verify();
     }, [token]);
 
+    // Le reste du code de votre composant est parfait, pas besoin de le modifier.
     return (
         <Box display="flex" flexDirection="column" alignItems="center" mt={8}>
             {status === 'verifying' && <Typography>Verifying your email...</Typography>}
